@@ -1,0 +1,48 @@
+<?php
+/*
+------------------------------------------------------
+---Submit New Reference Application Request Example---
+------------------------------------------------------
+
+cust_id - three character customer Id
+t_title - applicant title (Mr.,Mrs.,Ms.,Miss,Dr.,Rev.)
+t_fname - applicant first name
+t_sname - applicant surname
+t_contact_email - applicant contact email (to send tenant application form to)
+t_landline_num - applicant's UK landline number
+t_mobile_ num  - applicant's UK mobile number
+service_type - 1 - credit check, 2 - comprehensive reference, 3 - AML/watchlist check
+ren_prop_addr - rental property address
+ren_prop_postcode - rental property postcode
+ren_prop_mon_rent - monthly rental amount in GB Pounds
+t_tenancy_term - tenancy term in monnths (6, 12, 18 or 24)
+
+REST_API_KEY - As supplied by Vorensys
+USERNAME - As supplied by Vorensys
+PASSWORD - As supplied by Vorensys
+*/
+
+$service_url = 'https://www.vorensys.com/api/submit/';
+$curl = curl_init($service_url);
+$curl_post_data = array('apiKey' => REST_API_KEY, 'username' => USERNAME, 'password' => PASSWORD, 'custId' => 'VOR', 't_title' => 'Mr.', 't_fname' => 'John', 't_sname' => 'Smith', 't_contact_email' => 'markfb@vorensys.com', 't_landlinenum' => '01962123456', 't_mobilenum' => '07775123456', 'service_type' => '1', 'ren_prop_addr' => 'Test Street', 'ren_prop_postcode' => 'SO239NP', 'ren_prop_mon_rent' => '1200', 't_tenancy_term' => '12');
+
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, $curl_post_data);
+error_log(var_export($curl),0);
+$curl_response = curl_exec($curl);
+
+if ($curl_response === false) {
+	$info = curl_getinfo($curl);
+	curl_close($curl);
+	die('error occurred during curl exec. Additional info: ' . var_export($info));
+}
+
+curl_close($curl);
+
+$decoded = json_decode($curl_response);
+if (isset($decoded->response->status) && $decoded->response->status == 'ERROR') {
+	die('error occurred: ' . $decoded->response->errormessage);
+}
+
+?>
